@@ -14,20 +14,6 @@ def make_long_string(string, index):
     return string[:index] + string[index + 1:]
 
 
-def check_metacharacters(regex, string):
-    for case in ['?', '*', '+']:
-        reg_index = regex.find[case]
-        if reg_index != -1:
-            str_index = string.find(regex[reg_index - 1])
-            if str_index != -1:
-                if case == '?':
-                    regex, string = process_question_mark(regex, string)
-                elif case == '*':
-                    regex, string = process_asterisk(regex, string)
-                elif case == '+':
-                    regex, string = process_plus(regex, string)
-
-
 def process_question_mark(regex, string):
     if regex.find('?') == -1:
         return process_asterisk(regex, string)
@@ -51,7 +37,13 @@ def process_asterisk(regex, string):
 def process_plus(regex, string):
     reg_index = regex.find('+')
     if reg_index == -1:
-        return look_for_start(regex, string)
+        return check_length(regex, string)
+    if regex[reg_index - 1] == '.':
+        found_match = False
+        for letter in ''.join(set(string)):
+            found_match = process_plus(regex[reg_index - 2] + letter + regex[reg_index - 1], string)
+            if found_match:
+                return found_match
     str_index = string.find(regex[reg_index - 1])
     occurrences = [str_index]
     while str_index != -1:
@@ -62,7 +54,7 @@ def process_plus(regex, string):
             break
     if len(occurrences) == 1:
         regex_long = make_long_string(regex, reg_index)
-        return look_for_start(regex_long, string)
+        return check_length(regex_long, string)
     string_long = make_long_string(string, occurrences[0])
     return process_plus(regex, string_long)
 
@@ -96,7 +88,7 @@ def check_anchors(regex, string):
     elif regex[-1] == '$' and len(regex) - 1 <= len(string):
         return regex_comparison(regex[:-1], string[-len(regex[:-1]):])
     else:
-        return process_question_mark(regex, string)
+        return look_for_start(regex, string)
 
 
 def check_length(regex, string):
@@ -105,5 +97,18 @@ def check_length(regex, string):
     return True
 
 
-input_ = input()
-print(check_length(*input_.split('|')))
+def check_metacharacters(regex, string):
+    for case in ['?', '*', '+']:
+        reg_index = regex.find[case]
+        if reg_index != -1:
+            str_index = string.find(regex[reg_index - 1])
+            if str_index != -1:
+                if case == '?':
+                    regex, string = process_question_mark(regex, string)
+                elif case == '*':
+                    regex, string = process_asterisk(regex, string)
+                elif case == '+':
+                    regex, string = process_plus(regex, string)
+
+
+print(process_question_mark(*input().split('|')))
