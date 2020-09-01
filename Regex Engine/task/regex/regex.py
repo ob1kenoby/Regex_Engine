@@ -24,10 +24,12 @@ def process_question_mark(pattern, string, wildcard_index=0):
     return process_question_mark(pattern_short, string) or process_question_mark(pattern_long, string)
 
 
-def process_asterisk(pattern, string):
-    wildcard_index = pattern.find('*')
+def process_asterisk(pattern, string, wildcard_index=0):
+    wildcard_index = pattern.find('*', wildcard_index)
     if wildcard_index == -1:
         return process_plus(pattern, string)
+    if pattern[wildcard_index - 1] == '\\':
+        return process_asterisk(pattern, string, wildcard_index + 1)
     str_index = string.find(pattern[wildcard_index - 1])
     if str_index == -1:
         new_pattern = make_short_string(pattern, wildcard_index)  # remove unnecessary wildcard
