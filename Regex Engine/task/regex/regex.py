@@ -76,28 +76,28 @@ def check_length(pattern, string):
     return True
 
 
-def count_backslashes(pattern):
-    backslash_count = 0
-    backslash = -1
+def count_escapes(pattern):
+    count = 0
+    escape_index = -1
     for i in range(len(pattern)):
-        backslash = pattern.find('\\', backslash + 1)
-        if backslash == -1:
+        escape_index = pattern.find('\\', escape_index + 1)
+        if escape_index == -1:
             break
         else:
-            backslash_count += 1
-    return backslash_count
+            count += 1
+    return count
 
 
 def check_anchors(pattern, string):
-    backslashes = count_backslashes(pattern)
+    escapes = count_escapes(pattern)
     if pattern[0] == '^' and pattern[-1] == '$':
-        if len(pattern) - 2 == len(string):
+        if len(pattern) - 2 == len(string) + escapes:
             return regex_comparison(pattern[1:-1], string)
         return False
     elif pattern[0] == '^':
         return regex_comparison(pattern[1:], string)
     elif pattern[-1] == '$' and len(pattern) - 1 <= len(string):
-        return regex_comparison(pattern[:-1], string[-(len(pattern[:-1])-backslashes):])
+        return regex_comparison(pattern[:-1], string[-(len(pattern[:-1])-escapes):])
     return look_for_start(pattern, string)
 
 
