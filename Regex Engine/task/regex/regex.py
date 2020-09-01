@@ -14,11 +14,13 @@ def make_long_string(string, index):
     return string[:index] + string[index + 1:]  # string without the wildcard, but with the preceding character
 
 
-def process_question_mark(pattern, string):
-    if pattern.find('?') == -1:
+def process_question_mark(pattern, string, wildcard_index=0):
+    if pattern.find('?', wildcard_index) == -1:
         return process_asterisk(pattern, string)
-    index = pattern.find('?')
-    pattern_short, pattern_long = split_strings(pattern, index)
+    wildcard_index = pattern.find('?')
+    if pattern[wildcard_index - 1] == '\\':
+        return process_question_mark(pattern, string, wildcard_index + 1)
+    pattern_short, pattern_long = split_strings(pattern, wildcard_index)
     return process_question_mark(pattern_short, string) or process_question_mark(pattern_long, string)
 
 
