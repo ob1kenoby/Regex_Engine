@@ -34,10 +34,12 @@ def process_asterisk(pattern, string):
     return process_asterisk(pattern, string_short) or process_asterisk(pattern, string_long)
 
 
-def process_plus(pattern, string):
-    wildcard_index = pattern.find('+')
+def process_plus(pattern, string, wildcard_index=0):
+    wildcard_index = pattern.find('+', wildcard_index)
     if wildcard_index == -1:
         return check_length(pattern, string)
+    if pattern[wildcard_index - 1] == '\\':
+        return process_plus(pattern, string, wildcard_index + 1)
     if pattern[wildcard_index - 1] == '.':
         for letter in ''.join(set(string)):
             new_pattern = pattern[:wildcard_index - 1] + letter + pattern[wildcard_index:]
