@@ -71,7 +71,7 @@ def process_plus(pattern, string, wildcard_index=0):
 
 
 def check_length(pattern, string):
-    if len(pattern) > 0:
+    if pattern:
         return check_anchors(pattern, string)
     return True
 
@@ -90,13 +90,13 @@ def count_escapes(pattern):
 
 def check_anchors(pattern, string):
     escapes = count_escapes(pattern)
-    if pattern[0] == '^' and pattern[-1] == '$':
+    if pattern.startswith('^') and pattern.endswith('$'):
         if len(pattern) - 2 == len(string) + escapes:
             return regex_comparison(pattern[1:-1], string)
         return False
-    elif pattern[0] == '^':
+    elif pattern.startswith('^'):
         return regex_comparison(pattern[1:], string)
-    elif pattern[-1] == '$' and len(pattern) - 1 <= len(string):
+    elif pattern.endswith('$') and len(pattern) - 1 <= len(string):
         return regex_comparison(pattern[:-1], string[-(len(pattern[:-1])-escapes):])
     return look_for_start(pattern, string)
 
@@ -110,14 +110,14 @@ def look_for_start(pattern, string):
 
 
 def regex_comparison(pattern, string):
-    if len(pattern) == 0:
+    if not pattern:
         return True
-    elif len(pattern) > 0 and len(string) == 0:
+    elif len(pattern) > 0 and not string:
         return False
-    elif pattern[0] == '\\' and len(pattern) > 1:
+    elif pattern.startswith('\\') and len(pattern) > 1:
         if pattern[1] == string[0]:
             return regex_comparison(pattern[2:], string[1:])
-    elif pattern[0] == string[0] or pattern[0] == '.':
+    elif pattern.startswith(string[0]) or pattern.startswith('.'):
         return regex_comparison(pattern[1:], string[1:])
     return False
 
