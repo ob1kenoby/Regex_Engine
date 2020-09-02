@@ -112,10 +112,10 @@ def look_for_start(pattern, string):
 def regex_comparison(pattern, string):
     if not pattern:
         return True
-    elif len(pattern) > 0 and not string:
+    elif pattern and not string:
         return False
     elif pattern.startswith('\\') and len(pattern) > 1:
-        if pattern[1] == string[0]:
+        if string.startswith(pattern[1]):
             return regex_comparison(pattern[2:], string[1:])
     elif pattern.startswith(string[0]) or pattern.startswith('.'):
         return regex_comparison(pattern[1:], string[1:])
